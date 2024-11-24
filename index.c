@@ -55,7 +55,7 @@ void add_task(Task tasks[], int *count) {
     new_task.title[strcspn(new_task.title, "\n")] = '\0';
     printf("=> Description: ");
     fgets(new_task.desc, 100, stdin);
-    new_task.title[strcspn(new_task.title, "\n")] = '\0';
+    new_task.desc[strcspn(new_task.desc, "\n")] = '\0';
     add_status(&new_task);
     add_priority(&new_task);
     tasks[*count] = new_task;
@@ -91,8 +91,8 @@ void list_task(Task DB[], int count) {
         } else{
             printf("==> title: %s\n", DB[count-1].title);
             printf("==> Description: %s\n", DB[count-1].desc);
-            printf("==> Status: %d\n", DB[count-1].status);
-            printf("==> Priority: %d\n", DB[count-1].priority);
+            printf("==> Status: %s\n", DB[count-1].status ? "COMPLETED" : "INCOMPLETED");
+            printf("==> Priority: %s\n", DB[count-1].priority ? "HIGH" : "LOW");
         }
     } while (task > count || task <= 0);
 }
@@ -114,11 +114,11 @@ void delete_task(Task DB[], int *count) {
                 for (int i = task - 1; i < *count; i++){
                     DB[i] = DB[i+1];
                 }
-                //delete user from db;
-                printf("Your task is deleted successfully\n");
-                *count -=1;
+            
             }
         } while (task > *count || task <= 0);
+        printf("Your task is deleted successfully\n");
+        *count -=1;
     }
 }
 
