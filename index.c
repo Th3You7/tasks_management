@@ -19,6 +19,23 @@ typedef struct
 } Task;
 
 
+void add_title(Task* task) {
+    char title[50];
+    printf("=> Title: ");
+    fgets(title, sizeof(title), stdin);
+    title[strcspn(title, "\n")] = '\0';
+    //reassign a new value
+    strcpy(task->title, title);
+}
+
+void add_desc(Task* task) {
+    char desc[100];
+    printf("=> Description: ");
+    fgets(desc, sizeof(desc), stdin);
+    desc[strcspn(desc, "\n")] = '\0';
+    //reassign a new value
+    strcpy(task->desc, desc);
+}
 
 void add_status(Task* task) {
     int input;
@@ -49,13 +66,8 @@ void add_task(Task tasks[], int *count) {
     Task new_task;
     printf("*** Please add details ***\n");
     getchar();
-    printf("=> title: ");
-    fgets(new_task.title, 50, stdin);
-    //fgets add \n at the end; we remove it
-    new_task.title[strcspn(new_task.title, "\n")] = '\0';
-    printf("=> Description: ");
-    fgets(new_task.desc, 100, stdin);
-    new_task.desc[strcspn(new_task.desc, "\n")] = '\0';
+    add_title(&new_task);
+    add_desc(&new_task);
     add_status(&new_task);
     add_priority(&new_task);
     tasks[*count] = new_task;
@@ -97,7 +109,48 @@ void list_task(Task DB[], int count) {
     } while (task > count || task <= 0);
 }
 
-void update_task() {}
+void update_task(Task DB[], int count) {
+    int task;
+    int update_title, update_desc, update_priority, update_status;
+    if(!count) {
+        printf("*** No tasks to edit ***"); 
+        return;
+    }
+    printf("Please select the task you want to update\n");
+    //list all tasks
+    list_all(DB, count);
+    //which task to edit
+    scanf("%d", &task);
+
+    //ask for title
+    printf("Title: %s => update ? (Yes: 0, No: 1)\n", DB[task-1].title);
+    scanf("%d", &update_title);
+    if(!update_title){
+        getchar();
+        add_title(&DB[task-1]);
+    }
+    //ask for desc
+    printf("Description: %s => update ? (Yes: 0, No: 1) ",  DB[task-1].desc);
+    scanf("%d", &update_desc);
+    if(!update_desc){
+        getchar();
+        add_desc(&DB[task-1]);
+    }
+    //ask for priority
+    printf("Priority: %s => update ? (Yes: 0, No: 1) ",  DB[task-1].priority ? "HIGH" : "LOW");
+    scanf("%d", &update_priority);
+    if(!update_priority){
+        add_priority(&DB[task-1]);
+    }
+    //ask for status
+    printf("Status: %s => update ? (Yes: 0, No: 1) ", DB[count-1].status ? "COMPLETED" : "INCOMPLETED");
+    scanf("%d", &update_status);
+    if(!update_status) {
+        add_status(&DB[task-1]);
+    }
+
+    printf("*** Task updated successfully *** \n");
+}
 
 void delete_task(Task DB[], int *count) {
     int task;
@@ -147,7 +200,8 @@ int main() {
         list_task(DB, tasks);
         break;
        case 4:
-        update_task(); 
+        update_task(DB, tasks); 
+        break;
        case 5:
         delete_task(DB, &tasks);
         break;  
